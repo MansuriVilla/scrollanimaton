@@ -40,113 +40,97 @@ gsap.ticker.lagSmoothing(0);
   });
 
   function videoScalingAnimation() {
-  
     if (window.innerWidth > 768) {
-      
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: ".video_scale_animation-main", 
-          start: "top top", 
-          end: "+=" + (window.innerHeight * 5), 
-          scrub: 0.2, 
-          markers: false, 
-          pin: true, 
-        }
-      })
-      .from(".video_scale_animation .has_video_scale", {
-        scale: 0.7,
-        borderRadius: "20px",
-      })
-      .to(".video_scale_animation .has_video_scale", {
-        scale: 1, 
-        borderRadius: "0px",
-      });
-      
-      
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: ".video_scale_animation-main",
-          start: "top top", 
-          end: "bottom bottom", 
-          scrub: true, 
-          markers: false, 
-          
-        }
+      // Target each section and apply the animation
+      document.querySelectorAll(".video_scale_animation-main").forEach((section) => {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: section, 
+            start: "top top", 
+            end: "+=" + (window.innerHeight * 5), 
+            scrub: 0.2, 
+            markers: false, 
+            pin: true, 
+          }
+        })
+        .from(section.querySelector(".has_video_scale"), {
+          scale: 0.7,
+          borderRadius: "20px",
+        })
+        .to(section.querySelector(".has_video_scale"), {
+          scale: 1,
+          borderRadius: "0px",
+        });
       });
     }
   }
   
   videoScalingAnimation();
- 
+  
 
 
   function videoUpdatingSrc() {
-    const video = document.querySelector("#myVideo");
-    let src = video.currentSrc || video.src;
-    console.log(video, src);
-    
- 
-    function once(el, event, fn, opts) {
-      var onceFn = function (e) {
-        el.removeEventListener(event, onceFn);
-        fn.apply(this, arguments);
-      };
-      el.addEventListener(event, onceFn, opts);
-      return onceFn;
-    }
-    
-    once(document.documentElement, "touchstart", function (e) {
-      video.play();
-      video.pause();
-    });
-    
-    
-    let tl = gsap.timeline({
-      defaults: { duration: 1 },
-      scrollTrigger: {
-        trigger: ".sticky__elements--section2",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true
+    const videos = document.querySelectorAll("#myVideo"); // Select all videos with the same ID
+  
+    videos.forEach((video) => {
+      let src = video.currentSrc || video.src;
+      console.log(video, src);
+  
+      function once(el, event, fn, opts) {
+        var onceFn = function (e) {
+          el.removeEventListener(event, onceFn);
+          fn.apply(this, arguments);
+        };
+        el.addEventListener(event, onceFn, opts);
       }
-    });
-    
-    once(video, "loadedmetadata", () => {
-      tl.fromTo(
-        video,
-        {
-          currentTime: 0
+  
+      once(document.documentElement, "touchstart", function (e) {
+        video.play();
+        video.pause();
+      });
+  
+      let tl = gsap.timeline({
+        defaults: { duration: 1 },
+        scrollTrigger: {
+          trigger: ".sticky__elements--section2",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
         },
-        {
-          currentTime: video.duration || 1
-        }
-      );
-    });
-    
-   
-
+      });
+  
+      once(video, "loadedmetadata", () => {
+        tl.fromTo(
+          video,
+          {
+            currentTime: 0,
+          },
+          {
+            currentTime: video.duration || 1,
+          }
+        );
+      });
+  
       if (window["fetch"]) {
         fetch(src)
           .then((response) => response.blob())
           .then((response) => {
             var blobURL = URL.createObjectURL(response);
-    
             var t = video.currentTime;
             once(document.documentElement, "touchstart", function (e) {
               video.play();
               video.pause();
             });
-    
+  
             video.setAttribute("src", blobURL);
             video.currentTime = t + 0.01;
           });
       }
-
-    
-    
+    });
   }
+  
   videoUpdatingSrc();
-
+  
 });
 
 
