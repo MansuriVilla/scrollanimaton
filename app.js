@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", () => {
   gsap.registerPlugin(ScrollTrigger);
 
 
@@ -131,57 +131,72 @@ gsap.ticker.lagSmoothing(0);
   
   // videoUpdatingSrc();
 
-
-// Select all videos with the class 'myVideo'
-const videos = document.querySelectorAll('.myVideo');
-const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-let isScrolling;
-
-window.addEventListener('scroll', () => {
-  // Clear timeout to prevent pausing while scrolling
-  clearTimeout(isScrolling);
-
-  // Loop through each video and update based on scroll position
-  videos.forEach(video => {
-    // Get the scroll position and the video position in the document
-    const scrollPosition = window.scrollY;
-    const videoRect = video.getBoundingClientRect();
-
-    // Calculate the scroll percentage for the specific video
-    const scrollPercentage = Math.min((scrollPosition - videoRect.top) / (documentHeight - window.innerHeight), 1);
-
-    // Play the video immediately when it enters the viewport
-    if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0 && video.paused) {
-      video.play().catch(error => {
-        // Handle any play() errors, like autoplay restrictions
-        console.error('Video play failed:', error);
+  function updatingSrc() {
+    // Select all videos with the class 'myVideo'
+    const videos = document.querySelectorAll('.myVideo');
+    const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+    let isScrolling;
+    let lastTimeUpdate = 0; // To track the last time the video time was updated
+  
+    window.addEventListener('scroll', () => {
+      // Clear timeout to prevent pausing while scrolling
+      clearTimeout(isScrolling);
+  
+      // Limit the frequency of updates to once per animation frame
+      requestAnimationFrame(() => {
+        // Loop through each video and update based on scroll position
+        videos.forEach(video => {
+          // Get the scroll position and the video position in the document
+          const scrollPosition = window.scrollY;
+          const videoRect = video.getBoundingClientRect();
+  
+          // Calculate the scroll percentage for the specific video
+          const scrollPercentage = Math.min(
+            (scrollPosition - videoRect.top + window.innerHeight) / (documentHeight),
+            1
+          );
+  
+          // Play the video immediately when it enters the viewport
+          if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0 && video.paused) {
+            video.play().catch(error => {
+              // Handle any play() errors, like autoplay restrictions
+              console.error('Video play failed:', error);
+            });
+          }
+  
+          // Update the video's current time based on the scroll percentage (only if the video is in the viewport)
+          if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0) {
+            // Only update if it's not already updated recently (to prevent excessive updates)
+            if (performance.now() - lastTimeUpdate > 16) { // 16ms = ~60 FPS
+              video.currentTime = scrollPercentage * video.duration;
+              lastTimeUpdate = performance.now(); // Update the time of last update
+            }
+          }
+  
+          // Pause the video when it's out of the viewport
+          if (videoRect.bottom < 0 || videoRect.top > window.innerHeight) {
+            if (!video.paused) {
+              video.pause();
+            }
+          }
+        });
       });
-    }
-
-    // Update the video's current time based on the scroll percentage (only if the video is in the viewport)
-    if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0) {
-      video.currentTime = scrollPercentage * video.duration;
-    }
-
-    // Pause the video when it's out of the viewport
-    if (videoRect.bottom < 0 || videoRect.top > window.innerHeight) {
-      if (!video.paused) {
-        video.pause();
-      }
-    }
-  });
-
-  // Set a timeout to pause videos after scrolling stops
-  isScrolling = setTimeout(() => {
-    videos.forEach(video => {
-      if (!video.paused) {
-        video.pause();
-      }
+  
+      // Set a timeout to pause videos after scrolling stops
+      isScrolling = setTimeout(() => {
+        videos.forEach(video => {
+          if (!video.paused) {
+            video.pause();
+          }
+        });
+      }, 2); // Adjust delay as needed (shorter for quicker pause)
     });
-  }, 1); // Adjust delay as needed (shorter for quicker pause)
-});
+  }
 
- 
+    updatingSrc();
+  
+
+  
   
   
   

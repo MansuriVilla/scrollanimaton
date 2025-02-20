@@ -1,14 +1,11 @@
-*{margin: 0; padding: 0; box-sizing: border-box;}
-
-section{min-height: 100vh; width: 100vw;}
-.has__moving--img, .has__moving--img img{position: fixed; max-width: clamp(500px, 22vw, 800px); inset: 0; margin: auto;}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
+section { min-height: 100vh; width: 100vw; }
+main { overflow: hidden; }
+.has__moving--img, .has__moving--img img { position: fixed; max-width: clamp(500px, 22vw, 800px); inset: 0; margin: auto; }
 /* VIDEO ANIMATION CSS START */
-
-.video_scale_animation-main {position: sticky; top: 0;   z-index: 10; height: 100vh; text-align: center;position: relative;}
-.video_scale_animation-main .video_scale_animation {width: 100vw;position: relative;}
-.video_scale_animation-main .video_scale_animation video {width: 100vw; height: 100vh; object-fit: cover; }
-.video_scale_animation-main .video_scale_animation .has_video_scale { width: 100%;  overflow:hidden;  }
+.video_scale_animation-main { position: sticky; top: 0; z-index: 10; height: 100vh; text-align: center; position: relative; }
+.video_scale_animation-main .video_scale_animation { width: 100vw; position: relative; }
+.video_scale_animation-main .video_scale_animation video { width: 100vw; height: 100vh; object-fit: cover; }
+.video_scale_animation-main .video_scale_animation .has_video_scale { width: 100%; overflow:hidden; }
 .video_scale_animation-main .video_scale_animation video + .volume-btn { position: absolute; bottom: 20px; right: 20px; cursor: pointer; }
-
 /* VIDEO ANIMATION CSS END */
