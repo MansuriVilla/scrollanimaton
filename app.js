@@ -40,7 +40,7 @@ gsap.ticker.lagSmoothing(0);
   });
 
   function videoScalingAnimation() {
-    if (window.innerWidth > 768) {
+    if (window.innerWidth > 0) {
       // Target each section and apply the animation
       document.querySelectorAll(".video_scale_animation-main").forEach((section) => {
         gsap.timeline({
@@ -71,92 +71,93 @@ gsap.ticker.lagSmoothing(0);
   function updatingSrc() {
     const videos = document.querySelectorAll('.myVideo');
     const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+  
     let isScrolling;
     let lastTimeUpdate = 0;
-    
-    // Create a div to display the FPS
-    const fpsDisplay = document.createElement('div');
-    fpsDisplay.style.position = 'fixed';
-    fpsDisplay.style.top = '10px';
-    fpsDisplay.style.right = '10px';
-    fpsDisplay.style.color = 'rgb(68, 255, 0)';
-    fpsDisplay.style.fontSize = '2vw';
-    fpsDisplay.style.fontFamily = 'Arial, sans-serif';
-    fpsDisplay.style.zIndex = '1000'; // Ensure it's on top of the video
-    document.body.appendChild(fpsDisplay);
-    
-    let lastTime = performance.now();
-    let frameCount = 0;
-    let fps = 0;
-    
-    window.addEventListener('scroll', () => {
-      clearTimeout(isScrolling);
   
-      requestAnimationFrame(() => {
-        frameCount++;
-        const now = performance.now();
-        const delta = now - lastTime;
+    // Loop through each video to set up independent logic for scroll interaction
+    videos.forEach((video, index) => {
+      let lastTime = performance.now();
+      let frameCount = 0;
+      let fps = 0;
+      
+      // Create FPS display for each video
+      const fpsDisplay = document.createElement('div');
+      fpsDisplay.style.position = 'absolute';
+      fpsDisplay.style.top = '10px';
+      fpsDisplay.style.right = '10px';
+      fpsDisplay.style.color = 'rgb(68, 255, 0)';
+      fpsDisplay.style.fontSize = '2vw';
+      fpsDisplay.style.fontFamily = 'Arial, sans-serif';
+      fpsDisplay.style.zIndex = '1000'; // Ensure it's on top of the video
+      video.parentElement.style.position = 'relative'; // Ensure positioning context
+      video.parentElement.appendChild(fpsDisplay);
   
-        // Calculate FPS
-        if (delta >= 1000) { // Calculate FPS every second
-          fps = frameCount;
-          frameCount = 0;
-          lastTime = now;
-        }
+      // Event listener for scroll
+      window.addEventListener('scroll', () => {
+        clearTimeout(isScrolling);
+    
+        requestAnimationFrame(() => {
+          frameCount++;
+          const now = performance.now();
+          const delta = now - lastTime;
+          
+          // Calculate FPS for each video (on a per-video basis)
+          if (delta >= 1000) { // Calculate FPS every second
+            fps = frameCount;
+            frameCount = 0;
+            lastTime = now;
+          }
+          
+          // Update FPS display
+          fpsDisplay.textContent = `FPS: ${fps}`;
   
-        // Update the FPS display
-        fpsDisplay.textContent = `FPS: ${fps}`;
-        
-        videos.forEach(video => {
           const scrollPosition = window.scrollY;
           const videoRect = video.getBoundingClientRect();
-  
+    
+          // Calculate the scroll percentage for the current video
           const scrollPercentage = Math.min(
             (scrollPosition - videoRect.top + window.innerHeight) / documentHeight,
             1
           );
   
-          // Log total duration and current time of the video
-          console.log('Total Duration:', video.duration, 'Current Time:', video.currentTime);
-  
-          // Play the video immediately when it enters the viewport
-          if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0 && video.paused) {
-            video.play().catch(error => {
-              console.error('Video play failed:', error);
-            });
-          }
-  
-          // Update the video's current time based on the scroll percentage (only if the video is in the viewport)
+          // Log total duration and current time for debugging
+          console.log(`Video #${index + 1} - Total Duration: ${video.duration}, Current Time: ${video.currentTime}`);
+          
+          // Check if the video is in the viewport to start or stop it
           if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0) {
-            if (performance.now() - lastTimeUpdate > 22) { // 60 FPS limit
+            // Video is in view, play the video if it's not already playing
+            if (video.paused) {
+              video.muted = true; // Mute video for autoplay to work
+              video.play().catch(error => {
+                console.error(`Video #${index + 1} play failed:`, error);
+              });
+            }
+  
+            // Update the video's current time based on the scroll percentage (only if the video is in the viewport)
+            if (performance.now() - lastTimeUpdate > 22) { // To limit to ~60 FPS
               video.currentTime = scrollPercentage * video.duration;
               lastTimeUpdate = performance.now();
             }
-          }
-  
-          // Pause the video when it's out of the viewport
-          if (videoRect.bottom < 0 || videoRect.top > window.innerHeight) {
+          } else {
+            // Video is out of view, pause it
             if (!video.paused) {
               video.pause();
             }
           }
         });
+    
+        // Pause videos after scrolling stops (debounce)
+        isScrolling = setTimeout(() => {
+          videos.forEach((vid) => {
+            if (!vid.paused) {
+              vid.pause();
+            }
+          });
+        }, 2);
       });
-  
-      // Pause the video after scrolling stops
-      isScrolling = setTimeout(() => {
-        videos.forEach(video => {
-          if (!video.paused) {
-            video.pause();
-          }
-        });
-      }, 2);
     });
   }
   
   updatingSrc();
   
-  
-  
-
-

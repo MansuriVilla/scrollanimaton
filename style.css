@@ -9,3 +9,8 @@ main { overflow: hidden; }
 .video_scale_animation-main .video_scale_animation .has_video_scale { width: 100%; overflow:hidden; }
 .video_scale_animation-main .video_scale_animation video + .volume-btn { position: absolute; bottom: 20px; right: 20px; cursor: pointer; }
 /* VIDEO ANIMATION CSS END */
+
+
+@media only screen and (max-width:768px){
+    .video_scale_animation-main .video_scale_animation video{height: auto;}
+}
