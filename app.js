@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+
   gsap.registerPlugin(ScrollTrigger);
 
 
@@ -68,112 +68,49 @@ gsap.ticker.lagSmoothing(0);
   videoScalingAnimation();
   
 
-
-  // function videoUpdatingSrc() {
-  //   const videos = document.querySelectorAll("#myVideo"); // Select all videos with the same ID
-  
-  //   videos.forEach((video) => {
-  //     let src = video.currentSrc || video.src;
-  //     console.log(video, src);
-  
-  //     function once(el, event, fn, opts) {
-  //       var onceFn = function (e) {
-  //         el.removeEventListener(event, onceFn);
-  //         fn.apply(this, arguments);
-  //       };
-  //       el.addEventListener(event, onceFn, opts);
-  //     }
-  
-  //     once(document.documentElement, "touchstart", function (e) {
-  //       video.play();
-  //       video.pause();
-  //     });
-  
-  //     let tl = gsap.timeline({
-  //       defaults: { duration: 1 },
-  //       scrollTrigger: {
-  //         trigger: ".sticky__elements--section2",
-  //         start: "top top",
-  //         end: "bottom bottom",
-  //         scrub: true,
-  //       },
-  //     });
-  
-  //     once(video, "loadedmetadata", () => {
-  //       tl.fromTo(
-  //         video,
-  //         {
-  //           currentTime: 0,
-  //         },
-  //         {
-  //           currentTime: video.duration || 1,
-  //         }
-  //       );
-  //     });
-  
-  //     if (window["fetch"]) {
-  //       fetch(src)
-  //         .then((response) => response.blob())
-  //         .then((response) => {
-  //           var blobURL = URL.createObjectURL(response);
-  //           var t = video.currentTime;
-  //           once(document.documentElement, "touchstart", function (e) {
-  //             video.play();
-  //             video.pause();
-  //           });
-  
-  //           video.setAttribute("src", blobURL);
-  //           video.currentTime = t + 0.01;
-  //         });
-  //     }
-  //   });
-  // }
-  
-  // videoUpdatingSrc();
-
   function updatingSrc() {
-    // Select all videos with the class 'myVideo'
+    
     const videos = document.querySelectorAll('.myVideo');
     const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
     let isScrolling;
-    let lastTimeUpdate = 0; // To track the last time the video time was updated
+    let lastTimeUpdate = 0; 
   
     window.addEventListener('scroll', () => {
-      // Clear timeout to prevent pausing while scrolling
+      
       clearTimeout(isScrolling);
   
-      // Limit the frequency of updates to once per animation frame
+      
       requestAnimationFrame(() => {
-        // Loop through each video and update based on scroll position
+        
         videos.forEach(video => {
-          // Get the scroll position and the video position in the document
+          
           const scrollPosition = window.scrollY;
           const videoRect = video.getBoundingClientRect();
   
-          // Calculate the scroll percentage for the specific video
+          
           const scrollPercentage = Math.min(
             (scrollPosition - videoRect.top + window.innerHeight) / (documentHeight),
             1
           );
   
-          // Play the video immediately when it enters the viewport
+          
           if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0 && video.paused) {
             video.play().catch(error => {
-              // Handle any play() errors, like autoplay restrictions
+              
               console.error('Video play failed:', error);
             });
           }
   
-          // Update the video's current time based on the scroll percentage (only if the video is in the viewport)
+          
           if (videoRect.top <= window.innerHeight && videoRect.bottom >= 0) {
-            // Only update if it's not already updated recently (to prevent excessive updates)
-            if (performance.now() - lastTimeUpdate > 16) { // 16ms = ~60 FPS
+            
+            if (performance.now() - lastTimeUpdate > 16) { 
               video.currentTime = scrollPercentage * video.duration;
-              lastTimeUpdate = performance.now(); // Update the time of last update
+              lastTimeUpdate = performance.now(); 
             }
           }
   
-          // Pause the video when it's out of the viewport
+          
           if (videoRect.bottom < 0 || videoRect.top > window.innerHeight) {
             if (!video.paused) {
               video.pause();
@@ -182,14 +119,14 @@ gsap.ticker.lagSmoothing(0);
         });
       });
   
-      // Set a timeout to pause videos after scrolling stops
+      
       isScrolling = setTimeout(() => {
         videos.forEach(video => {
           if (!video.paused) {
             video.pause();
           }
         });
-      }, 2); // Adjust delay as needed (shorter for quicker pause)
+      }, 2); 
     });
   }
 
@@ -200,6 +137,5 @@ gsap.ticker.lagSmoothing(0);
   
   
   
-});
 
 
