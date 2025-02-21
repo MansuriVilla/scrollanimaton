@@ -1,5 +1,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 section { min-height: 100vh; width: 100vw; }
+canvas { width: 100%; }
 main { overflow: hidden; }
 .has__moving--img, .has__moving--img img { position: fixed; max-width: clamp(500px, 22vw, 800px); inset: 0; margin: auto; }
 /* VIDEO ANIMATION CSS START */

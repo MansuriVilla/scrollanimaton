@@ -47,14 +47,14 @@ gsap.ticker.lagSmoothing(0);
           scrollTrigger: {
             trigger: section, 
             start: "top top", 
-            end: "+=" + (window.innerHeight * 5), 
-            scrub: 0.2, 
+            end: "+=" + (window.innerHeight * 6), 
+            scrub: 0.3, 
             markers: false, 
             pin: true, 
           }
         })
         .from(section.querySelector(".has_video_scale"), {
-          scale: 0.7,
+          scale: 0.7,  
           borderRadius: "20px",
         })
         .to(section.querySelector(".has_video_scale"), {
@@ -66,6 +66,115 @@ gsap.ticker.lagSmoothing(0);
   }
   
   videoScalingAnimation();
+  
+
+
+  // function renderingInCanvas() {
+  //   const imagePath = './Player+ Sample/Player+'; 
+  //   const totalImages = 78; 
+  //   const canvas = document.getElementById('animation-canvas'); 
+  //   const ctx = canvas.getContext('2d'); 
+  //   let lastFrame = -1; 
+
+  //   const images = [];
+  //   for (let i = 0; i < totalImages; i++) {
+  //     const img = new Image();
+  //     img.src = `${imagePath}${String(i).padStart(2, '0')}.png`;
+  //     images.push(img); 
+  //   }
+
+  //   ScrollTrigger.create({
+  //     trigger: '.sticky__elements--section4', 
+  //     start: 'top top', 
+  //     end: "+=" + (window.innerHeight * 5), 
+  //     markers: false, 
+  //     pin: true, 
+  //     scrub: 0.2, 
+  //     onEnter: () => { 
+  //       console.log('Animation started');
+  //     },
+  //     onUpdate: ({ progress }) => {
+  //       if (progress > 0) {
+  //         const frame = Math.floor(progress * (totalImages - 1)); 
+  //         if (frame !== lastFrame) {
+  //           lastFrame = frame;            
+  //           ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //           ctx.drawImage(images[frame], 0, 0, canvas.width, canvas.height);
+  //         }
+  //       }
+  //     },
+  //     onLeave: () => { 
+  //       console.log('Animation stopped');
+  //     }
+  //   });
+  // }
+  
+  // renderingInCanvas();
+
+
+
+  function renderingInCanvas() {
+    const imagePath = './Player+ Sample/Player+'; 
+    const totalImages = 78; 
+    const canvas = document.getElementById('animation-canvas'); 
+    const ctx = canvas.getContext('2d'); 
+    let lastFrame = -1; 
+  
+    const images = [];
+    const imageAspectRatio = 1920 / 1080; // Aspect ratio of the images (width / height)
+  
+    // Set the canvas size to match the user's viewport
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  
+    // Calculate the image width and height based on the viewport, maintaining the aspect ratio
+    let imageWidth = window.innerWidth;
+    let imageHeight = window.innerWidth / imageAspectRatio;
+  
+    if (imageHeight > window.innerHeight) {
+      imageHeight = window.innerHeight;
+      imageWidth = window.innerHeight * imageAspectRatio;
+    }
+  
+    // Calculate the position to center the image
+    const offsetX = (canvas.width - imageWidth) / 2;  // Horizontal offset to center the image
+    const offsetY = (canvas.height - imageHeight) / 2; // Vertical offset to center the image
+  
+    for (let i = 0; i < totalImages; i++) {
+      const img = new Image();
+      img.src = `${imagePath}${String(i).padStart(2, '0')}.png`;
+      images.push(img);
+    }
+  
+    ScrollTrigger.create({
+      trigger: '.sticky__elements--section4', 
+      start: 'top top', 
+      end: "+=" + (window.innerHeight * 5), 
+      markers: false, 
+      pin: true, 
+      scrub: 0.2, 
+      onEnter: () => { 
+        console.log('Animation started');
+      },
+      onUpdate: ({ progress }) => {
+        if (progress > 0) {
+          const frame = Math.floor(progress * (totalImages - 1)); 
+          if (frame !== lastFrame) {
+            lastFrame = frame;            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw the image at the calculated position to keep it centered
+            ctx.drawImage(images[frame], offsetX, offsetY, imageWidth, imageHeight);
+          }
+        }
+      },
+      onLeave: () => { 
+        console.log('Animation stopped');
+      }
+    });
+  }
+  
+  renderingInCanvas();
+  
   
   
   function updatingSrc() {
@@ -160,4 +269,6 @@ gsap.ticker.lagSmoothing(0);
   }
   
   updatingSrc();
-  
+
+
+
