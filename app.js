@@ -70,7 +70,7 @@ function videoScalingAnimation() {
 videoScalingAnimation();
   
 function renderingInCanvas() {
-  const imagePath = './Player+ Sample/Player+'; 
+  const imagePath = './image-src/Player+'; 
   const totalImages = 78; 
   const canvas = document.getElementById('animation-canvas'); 
   const ctx = canvas.getContext('2d'); 
