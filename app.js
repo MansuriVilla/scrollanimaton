@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function videoScalingAnimation() {
     if (window.innerWidth > 0) {
-      // Target each section and apply the animation
+      
       document.querySelectorAll(".video_scale_animation-main").forEach((section) => {
         gsap.timeline({
           scrollTrigger: {
@@ -218,5 +218,52 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   updatingSrc();
+
+  function velocitySlider() {
+    const sliders = document.querySelectorAll(".siteVelocity__slider");
+    let speed = 1; 
+    let autoSpeed = 2; 
+
+    sliders.forEach(slider => {
+        let direction = parseInt(slider.dataset.direction, 10);
+        let images = Array.from(slider.children);
+        let position = 0;
+        const imgWidth = images[0].offsetWidth + 20;
+        const totalWidth = imgWidth * images.length;
+
+        
+        while (slider.offsetWidth < window.innerWidth * 2) {
+            images.forEach(img => {
+                let clone = img.cloneNode(true);
+                slider.appendChild(clone);
+            });
+        }
+
+        function animate() {
+            position += (speed + autoSpeed) * direction;
+
+            
+            if (position >= totalWidth) {
+                position -= totalWidth;
+            } else if (position <= -totalWidth) {
+                position += totalWidth;
+            }
+
+            gsap.set(slider, { x: -position });
+            speed *= 0.95; 
+            requestAnimationFrame(animate);
+        }
+
+        function handleScroll(event) {
+            let delta = event.deltaY || -event.wheelDelta;
+            speed = Math.min(Math.abs(delta), 20);
+        }
+
+        window.addEventListener("wheel", handleScroll);
+        animate();
+    });
+  }
+  velocitySlider();
+
 
 });
