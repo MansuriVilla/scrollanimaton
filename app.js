@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
-
   videoScalingAnimation();
     
   function renderingInCanvas() {
@@ -264,6 +263,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   velocitySlider();
-
 
 });
