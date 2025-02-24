@@ -220,16 +220,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function velocitySlider() {
     const sliders = document.querySelectorAll(".siteVelocity__slider");
-    let speed = 1; 
-    let autoSpeed = 2; 
-
+    let baseSpeed = 1; // initial speed
+    let scrollSpeedFactor = 5; // scroll speed
+  
     sliders.forEach(slider => {
-        let direction = parseInt(slider.dataset.direction, 10);
+        let direction = parseInt(slider.dataset.direction, 10) || 1;
         let images = Array.from(slider.children);
         let position = 0;
+        let speed = baseSpeed;
         const imgWidth = images[0].offsetWidth + 20;
         const totalWidth = imgWidth * images.length;
-
+  
         
         while (slider.offsetWidth < window.innerWidth * 2) {
             images.forEach(img => {
@@ -237,31 +238,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 slider.appendChild(clone);
             });
         }
-
+  
         function animate() {
-            position += (speed + autoSpeed) * direction;
-
-            
+            position += speed * direction;
+  
+          
             if (position >= totalWidth) {
                 position -= totalWidth;
             } else if (position <= -totalWidth) {
                 position += totalWidth;
             }
-
+  
             gsap.set(slider, { x: -position });
-            speed *= 0.95; 
+  
+            
+            speed = Math.max(baseSpeed, speed * 0.95);
+  
             requestAnimationFrame(animate);
         }
-
+  
         function handleScroll(event) {
             let delta = event.deltaY || -event.wheelDelta;
-            speed = Math.min(Math.abs(delta), 20);
+            speed = baseSpeed + Math.min(Math.abs(delta), scrollSpeedFactor); 
         }
-
+  
         window.addEventListener("wheel", handleScroll);
         animate();
     });
   }
+  
   velocitySlider();
 
 });
