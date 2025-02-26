@@ -66,65 +66,78 @@ document.addEventListener("DOMContentLoaded", function () {
   videoScalingAnimation();
     
   function renderingInCanvas() {
-    const imagePath = './image-src/Player+'; 
-    const totalImages = 78; 
-    const canvas = document.getElementById('animation-canvas'); 
-    const ctx = canvas.getContext('2d'); 
-    let lastFrame = -1; 
-
-    const images = [];
-    const imageAspectRatio = 1920 / 1080;
-
-    
+    const imagePath = './image-src/Player+ 001_';
+    const totalImages = 600; // 000 to 599 = 600 images
+    const canvas = document.getElementById('animation-canvas');
+    const ctx = canvas.getContext('2d');
+    let lastFrame = -1;
+    let images = [];
+    let loadedImages = 0;
+    const imageAspectRatio = 1440 / 650;
+  
+    // Set canvas size
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    
+  
     let imageWidth = window.innerWidth;
     let imageHeight = window.innerWidth / imageAspectRatio;
-
+  
     if (imageHeight > window.innerHeight) {
       imageHeight = window.innerHeight;
       imageWidth = window.innerHeight * imageAspectRatio;
     }
-
-    
-    const offsetX = (canvas.width - imageWidth) / 2; 
+  
+    const offsetX = (canvas.width - imageWidth) / 2;
     const offsetY = (canvas.height - imageHeight) / 2;
-
-    for (let i = 0; i < totalImages; i++) {
-      const img = new Image();
-      img.src = `${imagePath}${String(i).padStart(2, '0')}.webp`;
-      images.push(img);
-    }
-
-    ScrollTrigger.create({
-      trigger: '.sticky__elements--section4', 
-      start: 'top top', 
-      end: "+=" + (window.innerHeight * 5), 
-      markers: false, 
-      pin: true, 
-      scrub: 0.2, 
-      onEnter: () => { 
-        console.log('Animation started');
-      },
-      onUpdate: ({ progress }) => {
-        if (progress > 0) {
-          const frame = Math.floor(progress * (totalImages - 1)); 
-          if (frame !== lastFrame) {
-            lastFrame = frame;            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.drawImage(images[frame], offsetX, offsetY, imageWidth, imageHeight);
+  
+    // Function to start animation after images are loaded
+    function startAnimation() {
+      ScrollTrigger.create({
+        trigger: '.sticky__elements--section4',
+        start: 'top top',
+        end: "+=" + (window.innerHeight * 5),
+        markers: false,
+        pin: true,
+        scrub: 0.2,
+        onUpdate: ({ progress }) => {
+          if (progress > 0) {
+            const frame = Math.floor(progress * (totalImages - 1));
+            if (frame !== lastFrame) {
+              lastFrame = frame;
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(images[frame], offsetX, offsetY, imageWidth, imageHeight);
+            }
           }
         }
-      },
-      onLeave: () => { 
-        console.log('Animation stopped');
-      }
-    });
+      });
+    }
+  
+    // Preload images and only start animation when all are loaded
+    for (let i = 0; i < totalImages; i++) {
+      const img = new Image();
+      img.src = `${imagePath}${String(i).padStart(3, '0')}.webp`; // Fix: Uses 3-digit format (e.g., "001", "002")
+      
+      img.onload = () => {
+        loadedImages++;
+        if (loadedImages === 1) {
+          // Draw the first image immediately to prevent black screen
+          ctx.drawImage(img, offsetX, offsetY, imageWidth, imageHeight);
+        }
+        if (loadedImages === totalImages) {
+          startAnimation(); // Start animation only after all images are loaded
+        }
+      };
+  
+      img.onerror = () => {
+        console.error(`Error loading image: ${img.src}`);
+      };
+  
+      images.push(img);
+    }
   }
+  
   renderingInCanvas();
+  
 
   function updatingSrc() {
     const videos = document.querySelectorAll('.myVideo');
@@ -222,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const sliders = document.querySelectorAll(".siteVelocity__slider");
     let baseSpeed = 1; // initial speed
     let scrollSpeedFactor = 5; // scroll speed
-  
+
     sliders.forEach(slider => {
         let direction = parseInt(slider.dataset.direction, 10) || 1;
         let images = Array.from(slider.children);
@@ -230,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let speed = baseSpeed;
         const imgWidth = images[0].offsetWidth + 20;
         const totalWidth = imgWidth * images.length;
-  
+
         
         while (slider.offsetWidth < window.innerWidth * 2) {
             images.forEach(img => {
@@ -238,35 +251,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 slider.appendChild(clone);
             });
         }
-  
+
         function animate() {
             position += speed * direction;
-  
+
           
             if (position >= totalWidth) {
                 position -= totalWidth;
             } else if (position <= -totalWidth) {
                 position += totalWidth;
             }
-  
+
             gsap.set(slider, { x: -position });
-  
+
             
             speed = Math.max(baseSpeed, speed * 0.95);
-  
+
             requestAnimationFrame(animate);
         }
-  
+
         function handleScroll(event) {
             let delta = event.deltaY || -event.wheelDelta;
             speed = baseSpeed + Math.min(Math.abs(delta), scrollSpeedFactor); 
         }
-  
+
         window.addEventListener("wheel", handleScroll);
         animate();
     });
   }
-  
+
   velocitySlider();
+
+  function sectionBugHandler() {
+    console.log("Bug activated for section!");
+
+    gsap.timeline()
+      // Make it visible immediately
+      .to(".sectionBug__container", {
+         opacity: 1,
+         scale: 1,
+         visibility: "visible",
+         duration: 0.1,
+         ease: "power2.out"
+      })
+      // Animate from the bottom (y:200) to y:0
+      .to(".sectionBug__container", {
+         y: 0,
+         duration: 1,
+         ease: "power2.out"
+      }, 0) // start at the same time as the above
+      // Expand the width using a cubic-bezier easing for a smooth effect
+      .to(".sectionBug__container", {
+         width: "30%",
+         duration: 0.1,
+         ease: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+      }, 0);
+  }
+
+  ScrollTrigger.create({
+    trigger: ".sectionHas__bug",
+    start: "top center",
+    onEnter: sectionBugHandler,
+    onLeaveBack: () => {
+      console.log("Bug removed!");
+      gsap.to(".sectionBug__container", {
+        opacity: 0,
+        scale: 0.5,
+        visibility: "hidden",
+        y: 200,           // Return it offscreen at the bottom
+        // width: "50px",    // Shrink back to the original width
+        duration: 0.1,
+        ease: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+      });
+    }
+  });
+
+
 
 });
