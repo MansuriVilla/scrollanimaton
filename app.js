@@ -38,105 +38,34 @@ document.addEventListener("DOMContentLoaded", function () {
     duration: 1,
   });
 
-  function videoScalingAnimation() {
-    if (window.innerWidth > 0) {
+  // function videoScalingAnimation() {
+  //   if (window.innerWidth > 0) {
       
-      document.querySelectorAll(".video_scale_animation-main").forEach((section) => {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: section, 
-            start: "top top", 
-            end: "+=" + (window.innerHeight * 6), 
-            scrub: 0.3, 
-            markers: false, 
-            pin: true, 
-          }
-        })
-        .from(section.querySelector(".has_video_scale"), {
-          scale: 0.7,  
-          borderRadius: "20px",
-        })
-        .to(section.querySelector(".has_video_scale"), {
-          scale: 1,
-          borderRadius: "0px",
-        });
-      });
-    }
-  }
-  videoScalingAnimation();
+  //     document.querySelectorAll(".video_scale_animation-main").forEach((section) => {
+  //       gsap.timeline({
+  //         scrollTrigger: {
+  //           trigger: section, 
+  //           start: "top top", 
+  //           end: "+=" + (window.innerHeight * 6), 
+  //           scrub: 0.3, 
+  //           markers: false, 
+  //           pin: true, 
+  //         }
+  //       })
+  //       .from(section.querySelector(".has_video_scale"), {
+  //         scale: 0.7,  
+  //         borderRadius: "20px",
+  //       })
+  //       .to(section.querySelector(".has_video_scale"), {
+  //         scale: 1,
+  //         borderRadius: "0px",
+  //       });
+  //     });
+  //   }
+  // }
+  // videoScalingAnimation();
     
-  function renderingInCanvas() {
-    const imagePath = './image-src/Player+ 001_';
-    const totalImages = 600; // 000 to 599 = 600 images
-    const canvas = document.getElementById('animation-canvas');
-    const ctx = canvas.getContext('2d');
-    let lastFrame = -1;
-    let images = [];
-    let loadedImages = 0;
-    const imageAspectRatio = 1440 / 650;
-  
-    // Set canvas size
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  
-    let imageWidth = window.innerWidth;
-    let imageHeight = window.innerWidth / imageAspectRatio;
-  
-    if (imageHeight > window.innerHeight) {
-      imageHeight = window.innerHeight;
-      imageWidth = window.innerHeight * imageAspectRatio;
-    }
-  
-    const offsetX = (canvas.width - imageWidth) / 2;
-    const offsetY = (canvas.height - imageHeight) / 2;
-  
-    // Function to start animation after images are loaded
-    function startAnimation() {
-      ScrollTrigger.create({
-        trigger: '.sticky__elements--section4',
-        start: 'top top',
-        end: "+=" + (window.innerHeight * 5),
-        markers: false,
-        pin: true,
-        scrub: 0.2,
-        onUpdate: ({ progress }) => {
-          if (progress > 0) {
-            const frame = Math.floor(progress * (totalImages - 1));
-            if (frame !== lastFrame) {
-              lastFrame = frame;
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
-              ctx.drawImage(images[frame], offsetX, offsetY, imageWidth, imageHeight);
-            }
-          }
-        }
-      });
-    }
-  
-    // Preload images and only start animation when all are loaded
-    for (let i = 0; i < totalImages; i++) {
-      const img = new Image();
-      img.src = `${imagePath}${String(i).padStart(3, '0')}.webp`; // Fix: Uses 3-digit format (e.g., "001", "002")
-      
-      img.onload = () => {
-        loadedImages++;
-        if (loadedImages === 1) {
-          // Draw the first image immediately to prevent black screen
-          ctx.drawImage(img, offsetX, offsetY, imageWidth, imageHeight);
-        }
-        if (loadedImages === totalImages) {
-          startAnimation(); // Start animation only after all images are loaded
-        }
-      };
-  
-      img.onerror = () => {
-        console.error(`Error loading image: ${img.src}`);
-      };
-  
-      images.push(img);
-    }
-  }
-  
-  renderingInCanvas();
+
   
 
   function updatingSrc() {
@@ -328,4 +257,108 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+});
+
+
+
+
+function renderingInCanvas() {
+  const imagePath = './image-src-2/Home Banner_A03_';
+  const totalImages = 450; // 000 to 449
+  const canvas = document.getElementById('animation-canvas');
+  const ctx = canvas.getContext('2d');
+  let lastFrame = -1;
+  let images = [];
+  let loadedImages = 0;
+  const imageAspectRatio = 1440 / 650;
+
+  // Set canvas size
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let imageWidth = window.innerWidth;
+  let imageHeight = window.innerWidth / imageAspectRatio;
+
+  if (imageHeight > window.innerHeight) {
+    imageHeight = window.innerHeight;
+    imageWidth = window.innerHeight * imageAspectRatio;
+  }
+
+  const offsetX = (canvas.width - imageWidth) / 2;
+  const offsetY = (canvas.height - imageHeight) / 2;
+
+  function startAnimation() {
+    ScrollTrigger.create({
+      trigger: '.sticky__elements--section4',
+      start: 'top top',
+      end: "+=" + (window.innerHeight * 5),
+      markers: false,
+      pin: true,
+      scrub: 0.2,
+      onUpdate: ({ progress }) => {
+        if (progress > 0) {
+          const frame = Math.floor(progress * (totalImages - 1));
+          if (frame !== lastFrame) {
+            lastFrame = frame;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(images[frame], offsetX, offsetY, imageWidth, imageHeight);
+          }
+        }
+      }
+    });
+  }
+
+  for (let i = 0; i < totalImages; i++) {
+    const img = new Image();
+    img.src = `${imagePath}${String(i).padStart(3, '0')}.webp`;
+
+    img.onload = () => {
+      loadedImages++;
+      if (loadedImages === 1) {
+        ctx.drawImage(img, offsetX, offsetY, imageWidth, imageHeight);
+      }
+      if (loadedImages === totalImages) {
+        startAnimation();
+      }
+    };
+
+    img.onerror = () => {
+      console.error(`Error loading image: ${img.src}`);
+    };
+
+    images.push(img);
+  }
+}
+
+renderingInCanvas();
+
+
+
+
+// Configuration array for text scenes
+const textScenes = [
+  { selector: "#textBlock1", fadeInDuration: 1, holdDuration: 1, fadeOutDuration: 1, yOffset: 30 },
+  { selector: "#textBlock2", fadeInDuration: 1, holdDuration: 1, fadeOutDuration: 1, yOffset: 30 },
+  { selector: "#textBlock3", fadeInDuration: 1, holdDuration: 1, fadeOutDuration: 1, yOffset: 30 }
+];
+
+// Create a GSAP timeline linked to the scroll area.
+const textTimeline = gsap.timeline({
+  scrollTrigger: {
+    trigger: '.sticky__elements--section4',
+    start: 'top top',
+    end: "+=" + (window.innerHeight * 5),
+    scrub: 0.2,
+    markers: false
+  }
+});
+
+// Dynamically build timeline using the configuration array.
+textScenes.forEach((scene, index) => {
+  textTimeline
+    .fromTo(scene.selector, 
+      { opacity: 0, y: scene.yOffset }, 
+      { opacity: 1, y: 0, duration: scene.fadeInDuration }
+    )
+    .to(scene.selector, { opacity: 0, duration: scene.fadeOutDuration }, "+=" + scene.holdDuration);
 });

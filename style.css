@@ -7,7 +7,7 @@
     .video_scale_animation-main { position: sticky; top: 0; z-index: 10; height: 100vh; text-align: center; position: relative; }
     .video_scale_animation-main .video_scale_animation { width: 100vw; position: relative; }
     .video_scale_animation-main .video_scale_animation video { width: 100vw; height: 100vh; object-fit: cover; }
-    .video_scale_animation-main .video_scale_animation .has_video_scale { width: 100%; overflow:hidden; }
+    .video_scale_animation-main .video_scale_animation .has_video_scale { width: 100%; overflow:hidden; position: relative; }
     .video_scale_animation-main .video_scale_animation video + .volume-btn { position: absolute; bottom: 20px; right: 20px; cursor: pointer; }
     /* VIDEO ANIMATION CSS END */
 
@@ -21,8 +21,23 @@
 
 
 
+    .text-block {
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 20%; /* adjust as needed */
+        color: red;
+      }
+      
 
-
+      .text-wrapper {
+        position: absolute;
+        z-index: 99999;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
 
 
 
